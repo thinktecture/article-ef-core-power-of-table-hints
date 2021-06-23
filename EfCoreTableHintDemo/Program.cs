@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Thinktecture;
 
 namespace EfCoreTableHintDemo
 {
@@ -19,7 +20,8 @@ namespace EfCoreTableHintDemo
                                                            builder.ConfigureServices((hostCtx, services) =>
                                                                                      {
                                                                                         services.AddMvc();
-                                                                                        services.AddDbContext<DemoDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(hostCtx.Configuration.GetConnectionString("Demo")));
+                                                                                        services.AddDbContext<DemoDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(hostCtx.Configuration.GetConnectionString("Demo"),
+                                                                                                                                                                           sqlServerBuilder => sqlServerBuilder.AddTableHintSupport()));
                                                                                      });
 
                                                            builder.Configure(app =>

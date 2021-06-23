@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Thinktecture;
+using Thinktecture.EntityFrameworkCore;
 
 namespace EfCoreTableHintDemo
 {
@@ -11,8 +13,8 @@ namespace EfCoreTableHintDemo
    public class DemoController : Controller
    {
       private const IsolationLevel _ISOLATION_LEVEL =
-            IsolationLevel.ReadCommitted // Violates our business requirements, but just for testing purposes
-         // IsolationLevel.RepeatableRead
+            // IsolationLevel.ReadCommitted // Violates our business requirements, but just for testing purposes
+            IsolationLevel.RepeatableRead
          // IsolationLevel.Serializable
          ;
 
@@ -28,7 +30,9 @@ namespace EfCoreTableHintDemo
       {
          await using var tx = await _ctx.Database.BeginTransactionAsync(_ISOLATION_LEVEL);
 
-         var product = await _ctx.Products.FirstAsync(p => p.Id == id);
+         var product = await _ctx.Products
+                                 .WithTableHints(SqlServerTableHint.RowLock, SqlServerTableHint.UpdLock)
+                                 .FirstAsync(p => p.Id == id);
 
          // do more or less complex stuff
 

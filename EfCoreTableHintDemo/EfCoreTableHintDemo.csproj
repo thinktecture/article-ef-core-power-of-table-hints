@@ -9,6 +9,7 @@
 
    <ItemGroup>
      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7" />
+     <PackageReference Include="Thinktecture.EntityFrameworkCore.SqlServer" Version="3.0.0-beta12" />
    </ItemGroup>
 
 </Project>
