@@ -12,6 +12,11 @@ namespace EfCoreTableHintDemo
    [Route("[controller]")]
    public class DemoController : Controller
    {
+      private static readonly Func<DemoDbContext, Guid, Task<Product>> _loadProductAsync
+         = EF.CompileAsyncQuery((DemoDbContext ctx, Guid id) => ctx.Products
+                                                                   .WithTableHints(SqlServerTableHint.RowLock, SqlServerTableHint.UpdLock)
+                                                                   .First(p => p.Id == id));
+
       private const IsolationLevel _ISOLATION_LEVEL =
             // IsolationLevel.ReadCommitted // Violates our business requirements, but just for testing purposes
             IsolationLevel.RepeatableRead
@@ -30,9 +35,7 @@ namespace EfCoreTableHintDemo
       {
          await using var tx = await _ctx.Database.BeginTransactionAsync(_ISOLATION_LEVEL);
 
-         var product = await _ctx.Products
-                                 .WithTableHints(SqlServerTableHint.RowLock, SqlServerTableHint.UpdLock)
-                                 .FirstAsync(p => p.Id == id);
+         var product = await _loadProductAsync(_ctx, id);
 
          // do more or less complex stuff
 
